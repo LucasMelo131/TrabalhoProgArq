@@ -1,0 +1,12 @@
+Arquivo: 12022022.csv
+Linha: 0
+O arquivo nao existe ou nao pode ser aberto
+
+Arquivo: 04122022.csv
+Linha: 0
+O arquivo nao existe ou nao pode ser aberto
+
+Arquivo: 12022022.csv
+Linha: 0
+O arquivo nao existe ou nao pode ser aberto
+
