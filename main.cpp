@@ -79,8 +79,8 @@ void readfile (string nomeArquivo, vector<vector<string>> &matriz) {
 }
 
 //função que atualiza o map que associa o nome da criança ao seu vector de registros
-void atualizarRegistros (vector<vector<string>> info, string data, map<string,vector<registro>> &criancas) {
-    
+void atualizarRegistros (vector<vector<string>> info, string data, map<string,vector<registro>> &criancas) 
+{
     registro reg;
     string nome;
 
@@ -109,7 +109,6 @@ void atualizarRegistros (vector<vector<string>> info, string data, map<string,ve
             criancas[nome].push_back(reg);
         }
     }
-
 }
 
 //função que busca por uma criança no vector de ocorrencias e retorna o índice no qual ela e suas 
