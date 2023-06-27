@@ -45,12 +45,12 @@ bool isNumeric(string const &str)
 
 int readfile2(string nomeArquivo, vector<vector<string>> &matriz, string &crianca, string &ques)
 {
-    string line, word;
-    vector<string> row;
-    fstream file;
-    file.open(nomeArquivo, ios::in);
-    if (!file)
-    {
+  string line, word;
+  vector<string> row;
+  fstream file;
+  file.open(nomeArquivo, ios::in);
+  if (!file)
+  {
     cout << "Arquivo " << nomeArquivo << " nao existe" << endl;
     return 0;
   }
