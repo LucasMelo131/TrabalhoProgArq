@@ -1,42 +1,14 @@
-Arquivo: 12022022.csv
+Arquivo: 06042022.csv
 Linha: 0
 O arquivo nao existe ou nao pode ser aberto
 
-Arquivo: 04122022.csv
-Linha: 0
-O arquivo nao existe ou nao pode ser aberto
-
-Arquivo: 12022022.csv
-Linha: 0
-O arquivo nao existe ou nao pode ser aberto
-
-Arquivo: 1852022.csv
+Arquivo: 06042022.csv
 Linha: 0
 O arquivo nao existe ou nao pode ser aberto
 
 Arquivo: 07072022.csv
 Linha: 4
 A crianca Guilherme se repete em linhas diferentes no arquivo
-
-Arquivo: 07072022.csv
-Linha: 2
-A quantidade que gol possui em Guilherme nao existe ou nao e um inteiro positivo
-
-Arquivo: 07072022.csv
-Linha: 5
-A quantidade que drible possui em Mateus nao existe ou nao e um inteiro positivo
-
-Arquivo: 07072022.csv
-Linha: 2
-A quantidade que falta possui em Guilherme nao existe ou nao e um inteiro positivo
-
-Arquivo: 07072022.csv
-Linha: 3
-A quantidade que gol possui em Renata Julia nao existe ou nao e um inteiro positivo
-
-Arquivo: 07072022.csv
-Linha: 3
-A quantidade que gol possui em Renata Julia nao existe ou nao e um inteiro positivo
 
 Arquivo: 07072022.csv
 Linha: 3

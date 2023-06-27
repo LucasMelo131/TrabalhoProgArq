@@ -7,24 +7,6 @@
 #include <unordered_map>
 using namespace std;
 
-/* Trab arquivo 2 parte o que fazer :
-
-- Primeira funcionalidade: processar CSVs em lote
-i)  O arquivo não existir ou não puder ser aberto (x)
-ii) Uma criança aparecer mais de uma vez (em linhas diferentes) no mesmo arquivo (x)
-iii) A quantidade de vezes que uma criança executou um quesito não existir ou não
-     for um número inteiro positivo  ( )
-
-- Segunda funcionalidade: armazenar as estruturas vector<registro> e vector<ocorrencia> num arquivo binário (.dat) ( )
-- Terceira funcionalidade: recuperar as informações salvas em um arquivo binário
-  as estruturas existentes naquele momento deve ser limpas/esvaziadas
-  e devem ser construídas a partir das informações vindas do arquivo binário. ( )
-
-- Opcional: modularizar o programa (fazer os .h)
-
-- Manter o programa original e criar as novas funcionalidades.
-
-*/
 
 // contém nome da criança e a quantidade de vezes que realizou um quesito no total
 typedef struct CriancaDestaque
@@ -178,60 +160,6 @@ void show(vector<vector<string>> matriz)
   }
 }
 
-void processamentoLote(string arq, vector<vector<string>> &m)
-{
-  string entrada = arq + ".txt", linha;
-  fstream aux;
-  aux.open(entrada, ios::in);
-  if (!aux)
-  {
-    cout << "O arquivo " << entrada << " nao existe." << endl;
-  }
-  else
-  {
-    while (getline(aux, linha))
-    {
-      linha += ".csv";
-      string nome, quesito;
-      int check = readfile2(linha, m, nome, quesito);
-      if (check == 0)
-      {
-        fstream log;
-        log.open("log.txt", ios::app);
-        log << "Arquivo: " << linha << endl;
-        log << "Linha: 0" << endl;
-        log << "O arquivo nao existe ou nao pode ser aberto" << endl
-            << endl;
-        log.close();
-      }
-      if (check == 2)
-      {
-        fstream log;
-        log.open("log.txt", ios::app);
-        log << "Arquivo: " << linha << endl;
-        log << "Linha: " << m.size() + 1 << endl;
-        log << "A crianca " << nome << " se repete em linhas diferentes no arquivo" << endl
-            << endl;
-        log.close();
-      }
-      if (check == 3)
-      {
-        fstream log;
-        log.open("log.txt", ios::app);
-        log << "Arquivo: " << linha << endl;
-        log << "Linha: " << m.size() << endl;
-        log << "A quantidade que " << quesito << " possui em " << nome
-            << " nao existe ou nao e um inteiro positivo" << endl
-            << endl;
-        log.close();
-      }
-      show(m);
-      cout << endl;
-      m.clear();
-    }
-    aux.close();
-  }
-}
 
 // função que atualiza o map que associa o nome da criança ao seu vector de registros
 void atualizarRegistros(vector<vector<string>> info, string data, map<string, vector<registro>> &criancas)
@@ -329,6 +257,67 @@ void atualizarOcorrencias(vector<vector<string>> info, string data, map<string, 
         }
       }
     }
+  }
+}
+
+void processamentoLote(string arq, vector<vector<string>> &m, map<string,vector<registro>> &criancas,map<string, vector<ocorrencia>> &quesitos)
+{
+  string entrada = arq + ".txt", linha;
+  fstream aux;
+  aux.open(entrada, ios::in);
+  if (!aux)
+  {
+    cout << "O arquivo " << entrada << " nao existe." << endl;
+  }
+  else
+  {
+    while (getline(aux, linha))
+    {
+      string data = formataData(linha);
+      linha += ".csv";
+      string nome, quesito;
+      int check = readfile2(linha, m, nome, quesito);
+      if (check == 0)
+      {
+        cout << "Erro especificado no arquivo log.txt" << endl;
+        fstream log;
+        log.open("log.txt", ios::app);
+        log << "Arquivo: " << linha << endl;
+        log << "Linha: 0" << endl;
+        log << "O arquivo nao existe ou nao pode ser aberto" << endl
+            << endl;
+        log.close();
+      }
+      if (check == 2)
+      {
+        cout << "Erro especificado no arquivo log.txt" << endl;
+        fstream log;
+        log.open("log.txt", ios::app);
+        log << "Arquivo: " << linha << endl;
+        log << "Linha: " << m.size() + 1 << endl;
+        log << "A crianca " << nome << " se repete em linhas diferentes no arquivo" << endl
+            << endl;
+        log.close();
+      }
+      if (check == 3)
+      {
+        cout << "Erro especificado no arquivo log.txt" << endl;
+        fstream log;
+        log.open("log.txt", ios::app);
+        log << "Arquivo: " << linha << endl;
+        log << "Linha: " << m.size() << endl;
+        log << "A quantidade que " << quesito << " possui em " << nome
+            << " nao existe ou nao e um inteiro positivo" << endl
+            << endl;
+        log.close();
+      }
+      atualizarRegistros(m, data, criancas);
+      atualizarOcorrencias(m, data, quesitos);
+      show(m);
+      cout << endl;
+      m.clear();
+    }
+    aux.close();
   }
 }
 
@@ -462,7 +451,7 @@ int main()
   cout << "2 - Gerar relatorio por crianca" << endl;
   cout << "3 - Gerar relatorio por quesito" << endl;
   cout << "4 - Finalizar o programa" << endl;
-  cout << "5 - Processamento em lote" << endl;
+  cout << "5 - Processamento em lote" << endl << endl;
   int entrada;
   cin >> entrada;
 
@@ -499,15 +488,16 @@ int main()
     if (entrada == 5)
     {
       string arquivo;
+      cout << "Entre com o nome do arquivo txt" << endl;
       cin >> arquivo;
       vector<vector<string>> matriz;
-      processamentoLote(arquivo, matriz);
+      processamentoLote(arquivo, matriz,criancas,quesitos);
     }
     cout << "1 - Ler novo arquivo CSV" << endl;
     cout << "2 - Gerar relatorio por crianca" << endl;
     cout << "3 - Gerar relatorio por quesito" << endl;
     cout << "4 - Finalizar o programa" << endl;
-    cout << "5 - Processamento em lote" << endl;
+    cout << "5 - Processamento em lote" << endl << endl;
     cin >> entrada;
   }
   return 0;
