@@ -18,3 +18,7 @@ Arquivo: 07072022.csv
 Linha: 4
 A crianca Guilherme se repete em linhas diferentes no arquivo
 
+Arquivo: 07072022.csv
+Linha: 2
+A quantidade que gol possui em Guilherme nao existe ou nao e um inteiro positivo
+
