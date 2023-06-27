@@ -70,7 +70,7 @@ int readfile2(string nomeArquivo, vector<vector<string>> &matriz, string &crianc
         {
           string quesito = word;
           getline(str, word, ',');
-          if (!isNumeric(word))
+          if (word == "" || (!isNumeric(word)))
           {
             ques = quesito;
             matriz.push_back(row);
