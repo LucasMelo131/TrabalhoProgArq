@@ -24,7 +24,19 @@ iii) A quantidade de vezes que uma criança executou um quesito não existir ou 
 
 */
 
-int readfile(string nomeArquivo, vector<vector<string>> &matriz)
+int busca(string nome, vector<vector<string>> &matriz)
+{
+  for (int i = 0; i < matriz.size(); i++)
+  {
+    if (nome == matriz[i][0])
+    {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+int readfile2 (string nomeArquivo, vector<vector<string>> &matriz, string &crianca)
 {
 
   string line, word;
@@ -42,11 +54,22 @@ int readfile(string nomeArquivo, vector<vector<string>> &matriz)
     {
       row.clear();
       stringstream str(line);
-      while (getline(str, word, ','))
+      getline(str, word, ',');
+      int repete = busca(word, matriz);
+      if (repete == 0)
       {
         row.push_back(word);
+        while (getline(str, word, ','))
+        {
+          row.push_back(word);
+        }
+        matriz.push_back(row);
       }
-      matriz.push_back(row);
+      else
+      {
+        crianca = word;
+        return 2;
+      }
     }
   }
   file.close();
@@ -79,7 +102,8 @@ void processamentoLote(string arq, vector<vector<string>> &m)
     while (getline(aux, linha))
     {
       linha += ".csv";
-      int check = readfile(linha, m);
+      string kid;
+      int check = readfile2(linha, m, kid);
       if (check == 0)
       {
         fstream log;
@@ -87,6 +111,15 @@ void processamentoLote(string arq, vector<vector<string>> &m)
         log << "Arquivo: " << linha << endl;
         log << "Linha: 0" << endl;
         log << "O arquivo nao existe ou nao pode ser aberto" << endl
+            << endl;
+      }
+      if (check == 2)
+      {
+        fstream log;
+        log.open("log.txt", ios::app);
+        log << "Arquivo: " << linha << endl;
+        log << "Linha: " << m.size() + 1 << endl;
+        log << "A crianca " << kid << " se repete em linhas diferentes no arquivo" << endl
             << endl;
       }
       show(m);

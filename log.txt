@@ -10,3 +10,11 @@ Arquivo: 12022022.csv
 Linha: 0
 O arquivo nao existe ou nao pode ser aberto
 
+Arquivo: 1852022.csv
+Linha: 0
+O arquivo nao existe ou nao pode ser aberto
+
+Arquivo: 07072022.csv
+Linha: 4
+A crianca Guilherme se repete em linhas diferentes no arquivo
+
