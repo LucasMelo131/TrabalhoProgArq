@@ -14,3 +14,19 @@ Arquivo: 07072022.csv
 Linha: 3
 A quantidade que gol possui em Renata Julia nao existe ou nao e um inteiro positivo
 
+Arquivo: 07072022.csv
+Linha: 2
+A quantidade que gol possui em Guilherme nao existe ou nao e um inteiro positivo
+
+Arquivo: 07072022.csv
+Linha: 2
+A quantidade que gol possui em Guilherme nao existe ou nao e um inteiro positivo
+
+Arquivo: 07072022.csv
+Linha: 2
+A quantidade que gol possui em Guilherme nao existe ou nao e um inteiro positivo
+
+Arquivo: 07072022.csv
+Linha: 2
+A quantidade que gol possui em Guilherme nao existe ou nao e um inteiro positivo
+

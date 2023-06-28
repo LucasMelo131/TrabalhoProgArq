@@ -5,6 +5,7 @@
 #include <sstream>
 #include <map>
 #include <unordered_map>
+#include <cstdio>
 using namespace std;
 
 
@@ -159,7 +160,6 @@ void show(vector<vector<string>> matriz)
     cout << endl;
   }
 }
-
 
 // função que atualiza o map que associa o nome da criança ao seu vector de registros
 void atualizarRegistros(vector<vector<string>> info, string data, map<string, vector<registro>> &criancas)
@@ -445,20 +445,174 @@ void relatorioQuesito(map<string, vector<ocorrencia>> dadosQuesito)
     cout << "Elemento nao encontrado." << endl;
 }
 
+void salvarDadosBinario(const map<string, vector<registro>>& criancas, const map<string, vector<ocorrencia>>& quesitos, const string& nomeArquivo) {
+    ofstream arquivo(nomeArquivo, ios::binary);
+    if (!arquivo) {
+        cout << "Erro ao abrir o arquivo para escrita." << endl;
+        return;
+    }
+
+    // Salvar dados das crianÃ§as
+    size_t numCriancas = criancas.size();
+    arquivo.write(reinterpret_cast<const char*>(&numCriancas), sizeof(size_t));
+    for (const auto& crianca : criancas) {
+        size_t nomeSize = crianca.first.size();
+        arquivo.write(reinterpret_cast<const char*>(&nomeSize), sizeof(size_t));
+        arquivo.write(crianca.first.c_str(), nomeSize);
+
+        size_t numRegistros = crianca.second.size();
+        arquivo.write(reinterpret_cast<const char*>(&numRegistros), sizeof(size_t));
+        for (const auto& registro : crianca.second) {
+            size_t dataSize = registro.data.size();
+            arquivo.write(reinterpret_cast<const char*>(&dataSize), sizeof(size_t));
+            arquivo.write(registro.data.c_str(), dataSize);
+
+            size_t numAcoes = registro.acoes.size();
+            arquivo.write(reinterpret_cast<const char*>(&numAcoes), sizeof(size_t));
+            for (const auto& acao : registro.acoes) {
+                size_t acaoSize = acao.first.size();
+                arquivo.write(reinterpret_cast<const char*>(&acaoSize), sizeof(size_t));
+                arquivo.write(acao.first.c_str(), acaoSize);
+                arquivo.write(reinterpret_cast<const char*>(&acao.second), sizeof(int));
+            }
+        }
+    }
+
+    // Salvar dados dos quesitos
+    size_t numQuesitos = quesitos.size();
+    arquivo.write(reinterpret_cast<const char*>(&numQuesitos), sizeof(size_t));
+    for (const auto& quesito : quesitos) {
+        size_t quesitoSize = quesito.first.size();
+        arquivo.write(reinterpret_cast<const char*>(&quesitoSize), sizeof(size_t));
+        arquivo.write(quesito.first.c_str(), quesitoSize);
+
+        size_t numOcorrencias = quesito.second.size();
+        arquivo.write(reinterpret_cast<const char*>(&numOcorrencias), sizeof(size_t));
+        for (const auto& ocorrencia : quesito.second) {
+            size_t nomeCriancaSize = ocorrencia.nomeCrianca.size();
+            arquivo.write(reinterpret_cast<const char*>(&nomeCriancaSize), sizeof(size_t));
+            arquivo.write(ocorrencia.nomeCrianca.c_str(), nomeCriancaSize);
+
+            size_t numQuantidades = ocorrencia.listaQuantidades.size();
+            arquivo.write(reinterpret_cast<const char*>(&numQuantidades), sizeof(size_t));
+            for (const auto& quantidade : ocorrencia.listaQuantidades) {
+                size_t dataSize = quantidade.first.size();
+                arquivo.write(reinterpret_cast<const char*>(&dataSize), sizeof(size_t));
+                arquivo.write(quantidade.first.c_str(), dataSize);
+                arquivo.write(reinterpret_cast<const char*>(&quantidade.second), sizeof(int));
+            }
+        }
+    }
+
+    arquivo.close();
+    cout << "Dados salvos em " << nomeArquivo << " com sucesso." << endl;
+}
+
+void recuperarDadosBinario(map<string, vector<registro>>& criancas, map<string, vector<ocorrencia>>& quesitos, const string& nomeArquivo) {
+    ifstream arquivo(nomeArquivo, ios::binary);
+    if (!arquivo) {
+        cout << "Erro ao abrir o arquivo para leitura." << endl;
+        return;
+    }
+
+    // Limpar as estruturas existentes
+    criancas.clear();
+    quesitos.clear();
+
+    // Recuperar dados das crianÃ§as
+    size_t numCriancas;
+    arquivo.read(reinterpret_cast<char*>(&numCriancas), sizeof(size_t));
+    for (size_t i = 0; i < numCriancas; i++) {
+        size_t nomeSize;
+        arquivo.read(reinterpret_cast<char*>(&nomeSize), sizeof(size_t));
+        string nomeCrianca(nomeSize, ' ');
+        arquivo.read(&nomeCrianca[0], nomeSize);
+
+        size_t numRegistros;
+        arquivo.read(reinterpret_cast<char*>(&numRegistros), sizeof(size_t));
+        vector<registro> registros(numRegistros);
+        for (size_t j = 0; j < numRegistros; j++) {
+            size_t dataSize;
+            arquivo.read(reinterpret_cast<char*>(&dataSize), sizeof(size_t));
+            string data(dataSize, ' ');
+            arquivo.read(&data[0], dataSize);
+
+            size_t numAcoes;
+            arquivo.read(reinterpret_cast<char*>(&numAcoes), sizeof(size_t));
+            map<string, int> acoes;
+            for (size_t k = 0; k < numAcoes; k++) {
+                size_t acaoSize;
+                arquivo.read(reinterpret_cast<char*>(&acaoSize), sizeof(size_t));
+                string acao(acaoSize, ' ');
+                arquivo.read(&acao[0], acaoSize);
+                int valor;
+                arquivo.read(reinterpret_cast<char*>(&valor), sizeof(int));
+                acoes[acao] = valor;
+            }
+
+            registros[j] = { data, acoes };
+        }
+
+        criancas[nomeCrianca] = registros;
+    }
+
+    // Recuperar dados dos quesitos
+    size_t numQuesitos;
+    arquivo.read(reinterpret_cast<char*>(&numQuesitos), sizeof(size_t));
+    for (size_t i = 0; i < numQuesitos; i++) {
+        size_t quesitoSize;
+        arquivo.read(reinterpret_cast<char*>(&quesitoSize), sizeof(size_t));
+        string nomeQuesito(quesitoSize, ' ');
+        arquivo.read(&nomeQuesito[0], quesitoSize);
+
+        size_t numOcorrencias;
+        arquivo.read(reinterpret_cast<char*>(&numOcorrencias), sizeof(size_t));
+        vector<ocorrencia> ocorrencias(numOcorrencias);
+        for (size_t j = 0; j < numOcorrencias; j++) {
+            size_t nomeCriancaSize;
+            arquivo.read(reinterpret_cast<char*>(&nomeCriancaSize), sizeof(size_t));
+            string nomeCrianca(nomeCriancaSize, ' ');
+            arquivo.read(&nomeCrianca[0], nomeCriancaSize);
+
+            size_t numQuantidades;
+            arquivo.read(reinterpret_cast<char*>(&numQuantidades), sizeof(size_t));
+            map<string, int> quantidades;
+            for (size_t k = 0; k < numQuantidades; k++) {
+                size_t dataSize;
+                arquivo.read(reinterpret_cast<char*>(&dataSize), sizeof(size_t));
+                string data(dataSize, ' ');
+                arquivo.read(&data[0], dataSize);
+                int valor;
+                arquivo.read(reinterpret_cast<char*>(&valor), sizeof(int));
+                quantidades[data] = valor;
+            }
+
+            ocorrencias[j] = { nomeCrianca, quantidades };
+        }
+
+        quesitos[nomeQuesito] = ocorrencias;
+    }
+
+    arquivo.close();
+    cout << "Dados recuperados do arquivo " << nomeArquivo << " com sucesso." << endl;
+}
+
 int main()
 {
   cout << "1 - Ler novo arquivo CSV" << endl;
   cout << "2 - Gerar relatorio por crianca" << endl;
   cout << "3 - Gerar relatorio por quesito" << endl;
-  cout << "4 - Finalizar o programa" << endl;
-  cout << "5 - Processamento em lote" << endl << endl;
+  cout << "4 - Processamento em lote" << endl;
+  cout << "5 - Salvar as estruturas em arquivo binario" << endl;
+  cout << "6 - Resgatar as informacoes das estruturas em arquivo binario" << endl;
+  cout << "7 - Finalizar o programa" << endl << endl;
   int entrada;
   cin >> entrada;
 
   map<string, vector<registro>> criancas;   // map que associa cada criança ao seu vector de registros
   map<string, vector<ocorrencia>> quesitos; // map que associa cada quesito ao seu vector de ocorrências
 
-  while (entrada != 4)
+  while (entrada != 7)
   {
     // Lê arquivo e atualiza as estruturas
     if (entrada == 1)
@@ -485,7 +639,7 @@ int main()
       relatorioQuesito(quesitos);
       cout << endl;
     }
-    if (entrada == 5)
+    if (entrada == 4)
     {
       string arquivo;
       cout << "Entre com o nome do arquivo txt" << endl;
@@ -493,12 +647,25 @@ int main()
       vector<vector<string>> matriz;
       processamentoLote(arquivo, matriz,criancas,quesitos);
     }
+    if (entrada == 5)
+    {
+      salvarDadosBinario(criancas, quesitos, "indice.dat");
+    }
+    if (entrada == 6)
+    {
+      recuperarDadosBinario(criancas, quesitos, "indice.dat");
+    } 
     cout << "1 - Ler novo arquivo CSV" << endl;
     cout << "2 - Gerar relatorio por crianca" << endl;
     cout << "3 - Gerar relatorio por quesito" << endl;
-    cout << "4 - Finalizar o programa" << endl;
-    cout << "5 - Processamento em lote" << endl << endl;
+    cout << "4 - Processamento em lote" << endl;
+    cout << "5 - Salvar as estruturas em arquivo binario" << endl;
+    cout << "6 - Resgatar as informacoes das estruturas em arquivo binario" << endl;
+    cout << "7 - Finalizar o programa" << endl << endl;
     cin >> entrada;
+    if (entrada == 7) {
+      remove("indice.dat");
+    }
   }
   return 0;
 }
