@@ -663,9 +663,6 @@ int main()
     cout << "6 - Resgatar as informacoes das estruturas em arquivo binario" << endl;
     cout << "7 - Finalizar o programa" << endl << endl;
     cin >> entrada;
-    if (entrada == 7) {
-      remove("indice.dat");
-    }
   }
   return 0;
 }
